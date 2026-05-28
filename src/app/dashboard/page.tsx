@@ -5,7 +5,6 @@ import GoalTracker from "@/components/GoalTracker";
 import DashboardHeader from "@/components/DashboardHeader";
 import StreakTracker from "@/components/StreakTracker";
 import TopRepos from "@/components/TopRepos";
-import PinnedRepos from "@/components/PinnedRepos";
 import PinnedReposWidget from "@/components/PinnedReposWidget";
 import InactiveRepositoriesCard from "@/components/InactiveRepositoriesCard";
 import LanguageBreakdown from "@/components/LanguageBreakdown";
@@ -41,18 +40,14 @@ const SkeletonCard = () => (
 
 const ContributionGraphSkeleton = () => (
   <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
-    <h2 className="text-lg font-semibold text-[var(--foreground)]">
-      Your Commits
-    </h2>
+    <h2 className="text-lg font-semibold text-[var(--foreground)]">Your Commits</h2>
     <div className="mt-3 h-40 rounded bg-[var(--card-muted)] animate-pulse" />
   </div>
 );
 
 const PRMetricsSkeleton = () => (
   <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-sm">
-    <h2 className="text-lg font-semibold text-[var(--card-foreground)]">
-      PR Analytics
-    </h2>
+    <h2 className="text-lg font-semibold text-[var(--card-foreground)]">PR Analytics</h2>
     <div className="mt-3 h-40 rounded bg-[var(--card-muted)] animate-pulse" />
   </div>
 );
@@ -64,22 +59,22 @@ const CodingActivityInsightsCard = dynamic(
 
 const FriendComparison = dynamic(
   () => import("@/components/FriendComparison"),
-  { ssr: false, loading: () => <SkeletonCard /> }
+  { ssr: false, loading: () => <SkeletonCard /> },
 );
 
 const ActivityRingChart = dynamic(
   () => import("@/components/ActivityRingChart"),
-  { ssr: false, loading: () => <SkeletonCard /> }
+  { ssr: false, loading: () => <SkeletonCard /> },
 );
 
 const ContributionGraph = dynamic(
   () => import("@/components/ContributionGraph"),
-  { ssr: false, loading: () => <ContributionGraphSkeleton /> }
+  { ssr: false, loading: () => <ContributionGraphSkeleton /> },
 );
 
 const ContributionHeatmap = dynamic(
   () => import("@/components/ContributionHeatmap"),
-  { ssr: false, loading: () => <SkeletonCard /> }
+  { ssr: false, loading: () => <SkeletonCard /> },
 );
 
 const PRMetrics = dynamic(() => import("@/components/PRMetrics"), {
@@ -89,17 +84,17 @@ const PRMetrics = dynamic(() => import("@/components/PRMetrics"), {
 
 const PRBreakdownChart = dynamic(
   () => import("@/components/PRBreakdownChart"),
-  { ssr: false, loading: () => <SkeletonCard /> }
+  { ssr: false, loading: () => <SkeletonCard /> },
 );
 
-const CommitTimeChart = dynamic(() => import("@/components/CommitTimeChart"), {
-  ssr: false,
-  loading: () => <SkeletonCard />,
-});
+const CommitTimeChart = dynamic(
+  () => import("@/components/CommitTimeChart"),
+  { ssr: false, loading: () => <SkeletonCard /> },
+);
 
 const PRReviewTrendChart = dynamic(
   () => import("@/components/PRReviewTrendChart"),
-  { ssr: false, loading: () => <SkeletonCard /> }
+  { ssr: false, loading: () => <SkeletonCard /> },
 );
 
 export default async function DashboardPage() {
@@ -110,8 +105,8 @@ export default async function DashboardPage() {
     <DashboardSSEProvider>
       <div className="min-h-screen overflow-x-hidden bg-[var(--background)] p-4 text-[var(--foreground)] transition-colors md:p-8">
         <DashboardHeader />
-        
-        {/* Navigation Buttons Row */}
+
+        {/* Action bar */}
         <div className="mb-6 flex flex-wrap items-stretch justify-center gap-2 sm:justify-end">
           <Link
             href="/wrapped"
@@ -132,87 +127,126 @@ export default async function DashboardPage() {
 
         <StreakAtRiskBanner />
 
-        {/* Wrapped Promo Banner */}
-        <div className="mb-6 mt-6">
-          <Link href="/wrapped">
-            <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-purple-600 via-pink-600 to-fuchsia-600 p-6 shadow-lg transition-transform hover:scale-[1.01]">
-              <div className="relative z-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-                <div>
-                  <h2 className="text-2xl font-bold text-white">
-                    Your Year in Code is here! ✨
-                  </h2>
-                  <p className="mt-1 text-white/90">
-                    Discover your top languages, longest streaks, and coding habits of the year.
-                  </p>
-                </div>
-                <div className="inline-block self-start rounded-full bg-white px-6 py-2 font-bold text-purple-600 sm:self-auto">
-                  View Wrapped
-                </div>
-              </div>
-              <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/20 blur-3xl"></div>
-              <div className="absolute -bottom-10 -left-10 h-40 w-40 rounded-full bg-black/20 blur-3xl"></div>
-            </div>
-          </Link>
-        </div>
-
-        {/* Top Metric Cards */}
-        <div className="mb-6 space-y-6">
+        {/* Weekly summary — full width */}
+        <div className="mt-6">
           <WeeklySummaryCard />
-          <AIMentorWidget />
-          <PersonalRecords />
         </div>
 
-        {/* Main Workspace Layout Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 min-w-0">
-          {/* Main Analytics Columns (2/3 width on desktop) */}
-          <div className="lg:col-span-2 space-y-6">
+        {/* Personal records + AI mentor side by side */}
+        <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <PersonalRecords />
+          <AIMentorWidget />
+        </div>
+
+        {/* ── Row 1: Contribution graph (2/3) + Streak sidebar (1/3) ── */}
+        <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left: contribution graph + heatmap */}
+          <div className="lg:col-span-2 flex flex-col gap-6">
             <ContributionGraph />
-            
             <LazyWidget fallback={<SkeletonCard />}>
               <ContributionHeatmap />
             </LazyWidget>
-
-            <LazyWidget fallback={<SkeletonCard />}>
-              <FriendComparison />
-            </LazyWidget>
-
-            <div className="w-full min-w-0 overflow-hidden">
-              <RepoAnalyticsExplorer />
-            </div>
-
-            {/* Supplementary Code Performance Visualizations */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <CodingActivityInsightsCard />
-              <ActivityRingChart />
-              <PRMetrics />
-              <PRBreakdownChart />
-              <CommitTimeChart />
-              <PRReviewTrendChart />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <LanguageBreakdown />
-              <CIAnalytics />
-              <IssueMetrics />
-              <InactiveRepositoriesCard />
-            </div>
           </div>
 
-          {/* Sidebar Tracking Panel (1/3 width on desktop) */}
-          <div className="space-y-6">
+          {/* Right: streak + coding time */}
+          <div className="flex flex-col gap-6">
             <StreakTracker />
             <LocalCodingTime />
             <CodingTimeWidget />
-            <GoalTracker />
-            <RecentActivity />
-            <DiscussionsWidget />
-            <CommunityMetrics />
-            <PinnedReposWidget />
-            <TopRepos />
-            <PinnedRepos />
           </div>
         </div>
 
+        {/* Friend comparison — full width, below the fold */}
+        <div className="mt-6">
+          <LazyWidget fallback={<SkeletonCard />}>
+            <FriendComparison />
+          </LazyWidget>
+        </div>
+
+        {/* Repo analytics explorer — full width */}
+        <div className="mt-6">
+          <LazyWidget fallback={<SkeletonCard />}>
+            <RepoAnalyticsExplorer />
+          </LazyWidget>
+        </div>
+
+        {/* ── Row 2: PR metrics + Community metrics ── */}
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <PRMetrics />
+          <CommunityMetrics />
+        </div>
+
+        {/* PR breakdown + commit time — 2-col so charts have room */}
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <LazyWidget fallback={<SkeletonCard />}>
+            <PRBreakdownChart />
+          </LazyWidget>
+          <LazyWidget fallback={<SkeletonCard />}>
+            <CommitTimeChart />
+          </LazyWidget>
+        </div>
+
+        {/* Activity ring — full width */}
+        <div className="mt-6">
+          <LazyWidget fallback={<SkeletonCard />}>
+            <ActivityRingChart />
+          </LazyWidget>
+        </div>
+
+        {/* Coding activity insights — full width */}
+        <div className="mt-6">
+          <LazyWidget fallback={<SkeletonCard />}>
+            <CodingActivityInsightsCard />
+          </LazyWidget>
+        </div>
+
+        {/* PR review trend — full width */}
+        <div className="mt-6">
+          <LazyWidget fallback={<SkeletonCard />}>
+            <PRReviewTrendChart />
+          </LazyWidget>
+        </div>
+
+        {/* CI analytics */}
+<div className="mt-6">
+  <LazyWidget fallback={<SkeletonCard />}>
+    <CIAnalytics />
+  </LazyWidget>
+</div>
+
+        {/* Discussions — full width */}
+        <div className="mt-6">
+          <LazyWidget fallback={<SkeletonCard />}>
+            <DiscussionsWidget />
+          </LazyWidget>
+        </div>
+
+        {/* Pinned spotlight repos — full width */}
+        <div className="mt-6">
+          <LazyWidget fallback={<SkeletonCard />}>
+            <PinnedReposWidget />
+          </LazyWidget>
+        </div>
+
+        {/* Inactive repo reminder — full width */}
+        <div className="mt-6">
+          <LazyWidget fallback={<SkeletonCard />}>
+            <InactiveRepositoriesCard />
+          </LazyWidget>
+        </div>
+
+    
+
+        {/* Recent activity — full width */}
+        <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <LazyWidget fallback={<SkeletonCard />}>
+    <TopRepos />
+  </LazyWidget>
+
+  <LazyWidget fallback={<SkeletonCard />}>
+    <PinnedReposWidget />
+  </LazyWidget>
+</div>
       </div>
     </DashboardSSEProvider>
   );
