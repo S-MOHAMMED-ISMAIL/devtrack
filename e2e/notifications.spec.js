@@ -43,6 +43,27 @@ test.beforeEach(async ({ page }) => {
       }),
     });
   });
+
+  // Mock all unhandled API routes to prevent Supabase initialization errors
+  await page.route("**/api/**", async (route) => {
+    const url = route.request().url();
+    // Allow specific routes to continue to their individual handlers
+    if (
+      url.includes("notifications") ||
+      url.includes("metrics") ||
+      url.includes("goals") ||
+      url.includes("auth/session")
+    ) {
+      await route.continue();
+    } else {
+      // Mock all other API calls with empty responses
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({}),
+        status: 200,
+      });
+    }
+  });
 });
 
 test("notification bell opens and closes drawer", async ({ page }) => {
